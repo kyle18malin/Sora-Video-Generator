@@ -1,0 +1,40 @@
+#!/bin/bash
+
+echo "🚀 Quick Cloud Deployment Options"
+echo "=================================="
+echo ""
+
+echo "Option 1: Railway (Easiest - 2 minutes)"
+echo "1. Go to https://railway.app"
+echo "2. Sign up with GitHub"
+echo "3. Click 'New Project' → 'Deploy from GitHub repo'"
+echo "4. Connect your GitHub account"
+echo "5. Select this repository"
+echo "6. Add environment variables:"
+echo "   - KIE_API_KEY: 4fef225dcccec37484599005ab420345"
+echo "   - CALLBACK_BASE_URL: https://your-app.railway.app"
+echo ""
+
+echo "Option 2: Vercel (Also easy)"
+echo "1. Go to https://vercel.com"
+echo "2. Sign up with GitHub"
+echo "3. Import this repository"
+echo "4. Add environment variables"
+echo ""
+
+echo "Option 3: Heroku (Classic option)"
+echo "1. Go to https://heroku.com"
+echo "2. Create new app"
+echo "3. Connect GitHub repository"
+echo "4. Add environment variables"
+echo ""
+
+echo "Option 4: Use ngrok (Requires signup)"
+echo "1. Sign up at https://dashboard.ngrok.com/signup"
+echo "2. Get your authtoken"
+echo "3. Run: ngrok config add-authtoken YOUR_TOKEN"
+echo "4. Run: ngrok http 3000"
+echo ""
+
+echo "🎯 For immediate testing, I recommend Railway or Vercel!"
+echo "Both are free and will give you a public URL in minutes."

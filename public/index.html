@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sora Video Generator</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="app">
+        <header class="header">
+            <div class="header-content">
+                <h1><i class="fas fa-video"></i> Sora Video Generator</h1>
+                <div class="header-stats">
+                    <div class="stat">
+                        <span class="stat-label">Active Tasks:</span>
+                        <span class="stat-value" id="active-count">0</span>
+                    </div>
+                    <div class="stat">
+                        <span class="stat-label">Completed:</span>
+                        <span class="stat-value" id="completed-count">0</span>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <main class="main">
+            <div class="container">
+                <!-- Generation Form -->
+                <section class="generation-section">
+                    <div class="card">
+                        <h2><i class="fas fa-plus-circle"></i> Create Video</h2>
+                        
+                        <form id="generation-form" class="generation-form">
+                            <div class="form-group">
+                                <label for="prompt">Video Prompt</label>
+                                <textarea 
+                                    id="prompt" 
+                                    name="prompt" 
+                                    placeholder="Describe the video you want to generate..."
+                                    rows="4"
+                                    required
+                                ></textarea>
+                                <div class="char-count">
+                                    <span id="char-count">0</span>/5000 characters
+                                </div>
+                            </div>
+
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="aspect-ratio">Aspect Ratio</label>
+                                    <select id="aspect-ratio" name="aspectRatio">
+                                        <option value="landscape">Landscape (16:9)</option>
+                                        <option value="portrait">Portrait (9:16)</option>
+                                    </select>
+                                </div>
+
+                                <div class="form-group">
+                                    <label class="checkbox-label">
+                                        <input type="checkbox" id="remove-watermark" name="removeWatermark" checked>
+                                        <span class="checkmark"></span>
+                                        Remove Watermark
+                                    </label>
+                                </div>
+                            </div>
+
+                            <div class="form-actions">
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="fas fa-play"></i> Generate Video
+                                </button>
+                                <button type="button" id="batch-mode-btn" class="btn btn-secondary">
+                                    <i class="fas fa-layer-group"></i> Batch Mode
+                                </button>
+                            </div>
+                        </form>
+
+                        <!-- Batch Mode Form -->
+                        <div id="batch-form" class="batch-form" style="display: none;">
+                            <h3><i class="fas fa-layer-group"></i> Batch Generation</h3>
+                            <div class="form-group">
+                                <label for="batch-prompts">Multiple Prompts (one per line)</label>
+                                <textarea 
+                                    id="batch-prompts" 
+                                    name="batchPrompts" 
+                                    placeholder="Enter multiple prompts, one per line..."
+                                    rows="6"
+                                ></textarea>
+                            </div>
+                            <div class="form-actions">
+                                <button type="button" id="generate-batch" class="btn btn-primary">
+                                    <i class="fas fa-play"></i> Generate All
+                                </button>
+                                <button type="button" id="cancel-batch" class="btn btn-secondary">
+                                    Cancel
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Tasks List -->
+                <section class="tasks-section">
+                    <div class="card">
+                        <div class="card-header">
+                            <h2><i class="fas fa-list"></i> Generation Tasks</h2>
+                            <div class="card-actions">
+                                <button id="refresh-tasks" class="btn btn-sm">
+                                    <i class="fas fa-sync-alt"></i> Refresh
+                                </button>
+                                <button id="clear-completed" class="btn btn-sm">
+                                    <i class="fas fa-trash"></i> Clear Completed
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="tasks-container">
+                            <div id="tasks-list" class="tasks-list">
+                                <!-- Tasks will be populated here -->
+                            </div>
+                            
+                            <div id="empty-state" class="empty-state">
+                                <i class="fas fa-video"></i>
+                                <h3>No tasks yet</h3>
+                                <p>Create your first video generation task above</p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </main>
+
+        <!-- Task Detail Modal -->
+        <div id="task-modal" class="modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3>Task Details</h3>
+                    <button class="modal-close">&times;</button>
+                </div>
+                <div class="modal-body" id="task-details">
+                    <!-- Task details will be populated here -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Toast Notifications -->
+        <div id="toast-container" class="toast-container"></div>
+    </div>
+
+    <script src="js/main.js"></script>
+</body>
+</html>
