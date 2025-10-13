@@ -20,17 +20,14 @@ const tasks = new Map();
 const activeTasks = new Set();
 const MAX_CONCURRENT_TASKS = parseInt(process.env.MAX_CONCURRENT_TASKS) || 5;
 
-// WebSocket server for real-time updates
+// WebSocket server for real-time updates (disabled for Vercel)
 const server = require('http').createServer(app);
-const wss = new WebSocket.Server({ server });
+// const wss = new WebSocket.Server({ server }); // Disabled for Vercel compatibility
 
-// Broadcast function for WebSocket
+// Broadcast function for WebSocket (disabled for Vercel)
 function broadcast(data) {
-    wss.clients.forEach(client => {
-        if (client.readyState === WebSocket.OPEN) {
-            client.send(JSON.stringify(data));
-        }
-    });
+    // WebSocket disabled for Vercel compatibility
+    console.log('Broadcast:', data);
 }
 
 // Kie.ai API client
@@ -263,18 +260,18 @@ app.post('/api/callback', (req, res) => {
     }
 });
 
-// WebSocket connection handler
-wss.on('connection', (ws) => {
-    console.log('Client connected');
-    
-    // Send current tasks to new client
-    const taskList = Array.from(tasks.values());
-    ws.send(JSON.stringify({ type: 'initial_data', tasks: taskList }));
-
-    ws.on('close', () => {
-        console.log('Client disconnected');
-    });
-});
+// WebSocket connection handler (disabled for Vercel)
+// wss.on('connection', (ws) => {
+//     console.log('Client connected');
+//     
+//     // Send current tasks to new client
+//     const taskList = Array.from(tasks.values());
+//     ws.send(JSON.stringify({ type: 'initial_data', tasks: taskList }));
+//
+//     ws.on('close', () => {
+//         console.log('Client disconnected');
+//     });
+// });
 
 // Cleanup completed tasks older than 24 hours
 cron.schedule('0 0 * * *', () => {

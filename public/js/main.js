@@ -66,28 +66,17 @@ class SoraVideoGenerator {
     }
 
     connectWebSocket() {
-        const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
-        const wsUrl = `${protocol}//${window.location.host}`;
-        
-        this.ws = new WebSocket(wsUrl);
-        
-        this.ws.onopen = () => {
-            console.log('WebSocket connected');
-        };
-        
-        this.ws.onmessage = (event) => {
-            const data = JSON.parse(event.data);
-            this.handleWebSocketMessage(data);
-        };
-        
-        this.ws.onclose = () => {
-            console.log('WebSocket disconnected, attempting to reconnect...');
-            setTimeout(() => this.connectWebSocket(), 3000);
-        };
-        
-        this.ws.onerror = (error) => {
-            console.error('WebSocket error:', error);
-        };
+        // WebSocket disabled for Vercel compatibility
+        // Use polling instead
+        console.log('Using polling for updates (WebSocket disabled)');
+        this.startPolling();
+    }
+
+    startPolling() {
+        // Poll for updates every 2 seconds
+        setInterval(() => {
+            this.loadTasks();
+        }, 2000);
     }
 
     handleWebSocketMessage(data) {
