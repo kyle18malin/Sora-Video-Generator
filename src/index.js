@@ -327,9 +327,9 @@ setInterval(async () => {
 }, 30000); // Check every 30 seconds
 
 // Start server
-server.listen(PORT, () => {
-    console.log(`Sora Video Generator running on http://localhost:${PORT}`);
-    console.log(`WebSocket server running on ws://localhost:${PORT}`);
+const port = process.env.PORT || PORT;
+server.listen(port, () => {
+    console.log(`Sora Video Generator running on port ${port}`);
     console.log(`Max concurrent tasks: ${MAX_CONCURRENT_TASKS}`);
 });
 
