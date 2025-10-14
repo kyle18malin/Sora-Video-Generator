@@ -62,6 +62,11 @@ class KieApiClient {
             }
         };
 
+        console.log('Creating video task with payload:', JSON.stringify(payload, null, 2));
+        console.log('API Key present:', !!this.apiKey);
+        console.log('Base URL:', this.baseUrl);
+        console.log('Callback URL:', this.callbackUrl);
+
         try {
             const response = await axios.post(
                 `${this.baseUrl}/api/v1/jobs/createTask`,
@@ -74,9 +79,11 @@ class KieApiClient {
                 }
             );
 
+            console.log('Kie.ai response:', JSON.stringify(response.data, null, 2));
             return response.data;
         } catch (error) {
             console.error('Error creating video task:', error.response?.data || error.message);
+            console.error('Full error:', error);
             throw error;
         }
     }
@@ -128,10 +135,13 @@ async function processTaskQueue() {
         }
 
         try {
+            console.log(`Processing task ${task.id} with prompt: "${task.prompt}"`);
             activeTasks.add(task.id);
             updateTaskStatus(task.id, { status: 'processing', progress: 10 });
 
             const response = await kieClient.createVideoTask(task.prompt, task.options);
+            
+            console.log(`Task ${task.id} Kie.ai response:`, response);
             
             if (response.code === 200) {
                 updateTaskStatus(task.id, { 
@@ -139,10 +149,12 @@ async function processTaskQueue() {
                     kieTaskId: response.data.taskId,
                     progress: 50 
                 });
+                console.log(`Task ${task.id} marked as generating with Kie ID: ${response.data.taskId}`);
             } else {
                 throw new Error(response.message || 'Failed to create task');
             }
         } catch (error) {
+            console.error(`Task ${task.id} failed:`, error.message);
             updateTaskStatus(task.id, { 
                 status: 'failed', 
                 error: error.message,
