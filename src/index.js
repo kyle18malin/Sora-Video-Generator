@@ -22,12 +22,25 @@ const MAX_CONCURRENT_TASKS = parseInt(process.env.MAX_CONCURRENT_TASKS) || 5;
 
 // WebSocket server for real-time updates (disabled for Vercel)
 const server = require('http').createServer(app);
-// const wss = new WebSocket.Server({ server }); // Disabled for Vercel compatibility
+let wss = null;
 
-// Broadcast function for WebSocket (disabled for Vercel)
+// Only create WebSocket server if not in Vercel
+if (process.env.NODE_ENV !== 'production' || !process.env.VERCEL) {
+    wss = new WebSocket.Server({ server });
+}
+
+// Broadcast function for WebSocket
 function broadcast(data) {
-    // WebSocket disabled for Vercel compatibility
-    console.log('Broadcast:', data);
+    if (wss) {
+        wss.clients.forEach(client => {
+            if (client.readyState === WebSocket.OPEN) {
+                client.send(JSON.stringify(data));
+            }
+        });
+    } else {
+        // Log for Vercel (no WebSocket)
+        console.log('Broadcast:', data);
+    }
 }
 
 // Kie.ai API client
@@ -260,18 +273,20 @@ app.post('/api/callback', (req, res) => {
     }
 });
 
-// WebSocket connection handler (disabled for Vercel)
-// wss.on('connection', (ws) => {
-//     console.log('Client connected');
-//     
-//     // Send current tasks to new client
-//     const taskList = Array.from(tasks.values());
-//     ws.send(JSON.stringify({ type: 'initial_data', tasks: taskList }));
-//
-//     ws.on('close', () => {
-//         console.log('Client disconnected');
-//     });
-// });
+// WebSocket connection handler
+if (wss) {
+    wss.on('connection', (ws) => {
+        console.log('Client connected');
+        
+        // Send current tasks to new client
+        const taskList = Array.from(tasks.values());
+        ws.send(JSON.stringify({ type: 'initial_data', tasks: taskList }));
+
+        ws.on('close', () => {
+            console.log('Client disconnected');
+        });
+    });
+}
 
 // Cleanup completed tasks older than 24 hours
 cron.schedule('0 0 * * *', () => {
@@ -326,11 +341,14 @@ setInterval(async () => {
     }
 }, 30000); // Check every 30 seconds
 
-// Start server
-const port = process.env.PORT || PORT;
-server.listen(port, () => {
-    console.log(`Sora Video Generator running on port ${port}`);
-    console.log(`Max concurrent tasks: ${MAX_CONCURRENT_TASKS}`);
-});
+// Start server (only if not in Vercel environment)
+if (process.env.NODE_ENV !== 'production' || !process.env.VERCEL) {
+    const port = process.env.PORT || PORT;
+    server.listen(port, () => {
+        console.log(`Sora Video Generator running on port ${port}`);
+        console.log(`Max concurrent tasks: ${MAX_CONCURRENT_TASKS}`);
+    });
+}
 
+// Export for Vercel
 module.exports = app;
