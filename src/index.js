@@ -318,40 +318,7 @@ cron.schedule('0 0 * * *', () => {
 // Process task queue every 5 seconds
 setInterval(processTaskQueue, 5000);
 
-// Check task status every 30 seconds for tasks without callbacks
-setInterval(async () => {
-    const generatingTasks = Array.from(tasks.values())
-        .filter(task => task.status === 'generating' && task.kieTaskId);
-    
-    for (const task of generatingTasks) {
-        try {
-            // Check if task has been running for more than 2 minutes
-            const taskAge = Date.now() - new Date(task.createdAt).getTime();
-            if (taskAge > 120000) { // 2 minutes
-                console.log(`Checking status for task ${task.id} (Kie ID: ${task.kieTaskId})`);
-                
-                // For now, let's simulate completion after 3 minutes for testing
-                if (taskAge > 180000) { // 3 minutes
-                    updateTaskStatus(task.id, {
-                        status: 'completed',
-                        result: {
-                            urls: ['https://example.com/test-video.mp4'], // Placeholder URL
-                            consumeCredits: 100,
-                            costTime: 180,
-                            remainedCredits: 2500000
-                        },
-                        progress: 100
-                    });
-                    activeTasks.delete(task.id);
-                    broadcast({ type: 'task_completed', task: tasks.get(task.id) });
-                    console.log(`Task ${task.id} marked as completed (simulated)`);
-                }
-            }
-        } catch (error) {
-            console.error(`Error checking task ${task.id}:`, error);
-        }
-    }
-}, 30000); // Check every 30 seconds
+// Note: Simulation code removed - now using real Kie.ai callbacks only
 
 // Start server (only if not in Vercel environment)
 if (process.env.NODE_ENV !== 'production' || !process.env.VERCEL) {
