@@ -37,6 +37,11 @@ class SoraVideoGenerator {
             this.toggleBatchMode();
         });
 
+        // Add prompt button
+        document.getElementById('add-prompt-btn').addEventListener('click', () => {
+            this.addPromptInput();
+        });
+
         // Character count
         document.getElementById('prompt').addEventListener('input', (e) => {
             this.updateCharCount(e.target.value.length);
@@ -153,19 +158,13 @@ class SoraVideoGenerator {
     }
 
     async createBatchTasks() {
-        const promptsText = document.getElementById('batch-prompts').value.trim();
-        
-        if (!promptsText) {
-            this.showToast('Please enter prompts for batch generation', 'error');
-            return;
-        }
-
-        const prompts = promptsText.split('\n')
-            .map(p => p.trim())
-            .filter(p => p.length > 0);
+        const promptInputs = document.querySelectorAll('#prompt-container textarea');
+        const prompts = Array.from(promptInputs)
+            .map(input => input.value.trim())
+            .filter(prompt => prompt.length > 0);
 
         if (prompts.length === 0) {
-            this.showToast('Please enter valid prompts', 'error');
+            this.showToast('Please enter at least one prompt', 'error');
             return;
         }
 
@@ -192,7 +191,7 @@ class SoraVideoGenerator {
                 throw new Error(error.error || 'Failed to create batch tasks');
             }
 
-            document.getElementById('batch-prompts').value = '';
+            this.clearAllPrompts();
             this.toggleBatchMode();
             this.showToast(`Created ${prompts.length} tasks successfully!`, 'success');
             
@@ -210,11 +209,62 @@ class SoraVideoGenerator {
             batchForm.style.display = 'block';
             batchBtn.textContent = 'Single Mode';
             batchBtn.innerHTML = '<i class="fas fa-user"></i> Single Mode';
+            this.addPromptInput(); // Add first prompt input
         } else {
             batchForm.style.display = 'none';
             batchBtn.textContent = 'Batch Mode';
             batchBtn.innerHTML = '<i class="fas fa-layer-group"></i> Batch Mode';
+            this.clearAllPrompts();
         }
+    }
+
+    addPromptInput() {
+        const promptContainer = document.getElementById('prompt-container');
+        const promptCount = document.getElementById('prompt-count');
+        const promptCounter = promptContainer.children.length + 1;
+        const promptId = `prompt-${promptCounter}`;
+        
+        const promptGroup = document.createElement('div');
+        promptGroup.className = 'prompt-input-group';
+        promptGroup.innerHTML = `
+            <div class="form-group">
+                <label for="${promptId}">
+                    Prompt ${promptCounter}
+                    <button type="button" class="remove-prompt-btn" data-prompt-id="${promptId}">
+                        <i class="fas fa-times"></i> Remove
+                    </button>
+                </label>
+                <textarea 
+                    id="${promptId}" 
+                    name="prompts[]" 
+                    placeholder="Describe the video you want to generate...&#10;&#10;Example:&#10;A cinematic shot of a cat sitting on a windowsill,&#10;looking out at a rainy day. The camera slowly zooms in&#10;on the cat's eyes as raindrops hit the window."
+                    rows="4"
+                ></textarea>
+            </div>
+        `;
+        
+        promptContainer.appendChild(promptGroup);
+        this.updatePromptCount();
+        
+        // Add remove button event listener
+        const removeBtn = promptGroup.querySelector('.remove-prompt-btn');
+        removeBtn.addEventListener('click', () => {
+            promptGroup.remove();
+            this.updatePromptCount();
+        });
+    }
+
+    updatePromptCount() {
+        const promptContainer = document.getElementById('prompt-container');
+        const promptCount = document.getElementById('prompt-count');
+        const count = promptContainer.children.length;
+        promptCount.textContent = `${count} prompt${count !== 1 ? 's' : ''}`;
+    }
+
+    clearAllPrompts() {
+        const promptContainer = document.getElementById('prompt-container');
+        promptContainer.innerHTML = '';
+        this.updatePromptCount();
     }
 
     async loadTasks() {
