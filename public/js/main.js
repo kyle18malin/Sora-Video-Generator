@@ -344,13 +344,17 @@ class SoraVideoGenerator {
                     <h4>Generated Video:</h4>
                     <div class="task-result-video">
                         ${task.result.urls.map(url => `
-                            <video controls>
-                                <source src="${url}" type="video/mp4">
-                                Your browser does not support the video tag.
-                            </video>
-                            <a href="${url}" target="_blank" rel="noopener noreferrer">
-                                <i class="fas fa-external-link-alt"></i> Open in new tab
-                            </a>
+                            <div class="video-preview">
+                                <video controls preload="metadata" style="width: 100%; max-width: 300px; height: auto; border-radius: 8px;">
+                                    <source src="${url}" type="video/mp4">
+                                    Your browser does not support the video tag.
+                                </video>
+                                <div class="video-actions">
+                                    <a href="${url}" target="_blank" rel="noopener noreferrer" class="btn btn-sm">
+                                        <i class="fas fa-external-link-alt"></i> Open Full Size
+                                    </a>
+                                </div>
+                            </div>
                         `).join('')}
                     </div>
                 </div>
@@ -404,18 +408,21 @@ class SoraVideoGenerator {
             if (task.result.urls && task.result.urls.length > 0) {
                 resultHTML = `
                     <h4>Generated Videos:</h4>
-                    ${task.result.urls.map(url => `
-                        <div style="margin-bottom: 1rem;">
-                            <video controls style="width: 100%; max-width: 500px;">
-                                <source src="${url}" type="video/mp4">
-                                Your browser does not support the video tag.
-                            </video>
-                            <br>
-                            <a href="${url}" target="_blank" rel="noopener noreferrer">
-                                <i class="fas fa-external-link-alt"></i> Open in new tab
-                            </a>
-                        </div>
-                    `).join('')}
+                    <div class="modal-videos">
+                        ${task.result.urls.map(url => `
+                            <div class="modal-video-item">
+                                <video controls preload="metadata" style="width: 100%; max-width: 600px; height: auto; border-radius: 12px;">
+                                    <source src="${url}" type="video/mp4">
+                                    Your browser does not support the video tag.
+                                </video>
+                                <div class="video-actions">
+                                    <a href="${url}" target="_blank" rel="noopener noreferrer" class="btn btn-primary">
+                                        <i class="fas fa-external-link-alt"></i> Open Full Size
+                                    </a>
+                                </div>
+                            </div>
+                        `).join('')}
+                    </div>
                 `;
             }
             
